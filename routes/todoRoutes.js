@@ -29,11 +29,33 @@ router.post("/todo", (req, res) => {
         .then(todo => {
             const { _id, title, done} = todo
     
-            res.status(200).json({id: _id, title, done})
+            res.status(201).json({id: _id, title, done})
         })
         .catch(err => {
             res.status(400).json({ message: "unable to post", errors: `${err}`})
         })
+})
+
+//patch
+router.patch('/todo/:id', (req, res) => {
+    Todos.findById(req.params.id, {}, {}, (err, todo) => {
+        if(err){
+            res.status(404).json({message: "Item not found", errors: `${err}`})
+        } else {
+            todo.done = req.body.done
+
+            todo
+            .save()
+            .then((todo) => {
+                res.status(200).json(todo)
+            })
+            .catch(err => {
+                res
+                .status(400)
+                .json({message: "Unable to update", errors: `${err}`})
+            })
+        }
+    })
 })
 
 module.exports = router 
